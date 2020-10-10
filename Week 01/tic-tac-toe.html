@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: green;
+            display: inline-block;
+            border: 1px solid #fff;
+            text-align: center;
+            line-height: 100px;
+            font-size: 50px;
+            vertical-align: middle;
+
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="board"></div>
+</body>
+<script>
+    let pattern = [
+        [1, 0, 0],
+        [0, 2, 0],
+        [0, 0, 0]
+    ];
+
+    let userFlag = 1;
+
+    function show() {
+        let board = document.getElementById('board');
+        for (let i = 0; i < pattern.length; i++) {
+            const arr = pattern[i];
+            for (let j = 0; j < arr.length; j++) {
+                const el = arr[j];
+                let mark = el === 1 ? '⭕️' :
+                    el === 2 ? '❌' :
+                        '';
+                let cell = document.createElement('div');
+                cell.innerText = mark;
+                cell.classList.add('cell');
+                cell.addEventListener('click', () => move(i, j));
+                board.appendChild(cell);
+            }
+            board.appendChild(document.createElement('br'));
+        }
+    }
+
+    function move(i, j) {
+        console.log(i, j);
+    }
+
+    show();
+</script>
+
+</html>
