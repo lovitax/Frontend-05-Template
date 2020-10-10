@@ -46,7 +46,7 @@
             for (let j = 0; j < arr.length; j++) {
                 const el = arr[j];
                 let mark = el === 1 ? '⭕️' :
-                            el === 2 ? '❌' : '';
+                    el === 2 ? '❌' : '';
                 let cell = document.createElement('div');
                 if (isPaint) cell.innerText = mark;
                 cell.classList.add('cell');
@@ -54,7 +54,7 @@
                 board.appendChild(cell);
             }
             board.appendChild(document.createElement('br'));
-        }        
+        }
     }
     show(true);
 
@@ -62,20 +62,21 @@
         if (pattern[i][j] === 0) {
             pattern[i][j] = userFlag;
             show(true);
-            if(check()) {
+            if (check(pattern, userFlag)) {
                 alert(`${userFlag === 1 ? '⭕️' : '❌'} 赢了`);
                 show(false);
             }
             userFlag = 3 - userFlag;
+            willWin(pattern, userFlag);
         }
     }
 
-    function check() {
+    function check(pattern, userFlag) {
         // 行
         for (let i = 0; i < 3; i++) {
             let win = true;
             for (let j = 0; j < 3; j++) {
-                if(pattern[i][j] !== userFlag) {
+                if (pattern[i][j] !== userFlag) {
                     win = false;
                 }
             }
@@ -100,7 +101,7 @@
         {
             let win = true;
             for (let i = 0; i < 3; i++) {
-                if(pattern[i][i] !== userFlag) {
+                if (pattern[i][i] !== userFlag) {
                     win = false;
                 }
             }
@@ -111,11 +112,29 @@
         {
             let win = true;
             for (let i = 0; i < 3; i++) {
-                if(pattern[i][2-i] !== userFlag) {
+                if (pattern[i][2 - i] !== userFlag) {
                     win = false;
                 }
             }
             if (win) return win;
+        }
+    }
+
+    function clone(pattern) {
+        return JSON.parse(JSON.stringify(pattern));
+    }
+
+    function willWin() {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (pattern[i][j])
+                    continue;
+                let temp = clone(pattern);
+                temp[i][j] = userFlag;
+                if (check(temp, userFlag)) {
+                    console.log(`${userFlag === 1 ? '⭕️' : '❌'} will win`);
+                }
+            }
         }
     }
 
