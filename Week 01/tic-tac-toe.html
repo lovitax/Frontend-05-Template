@@ -36,6 +36,7 @@
 
     /**
      *  isPaint Boolean 控制是否绘制棋子
+        本来想赢了之后清空棋盘，但是忘记了把数据清空，只是不画当前的棋子。。。所以有问题
     */
     function show(isPaint) {
         let board = document.getElementById('board');
@@ -48,7 +49,7 @@
                 let mark = el === 1 ? '⭕️' :
                     el === 2 ? '❌' : '';
                 let cell = document.createElement('div');
-                if (isPaint) cell.innerText = mark;
+                // if (isPaint) cell.innerText = mark;
                 cell.classList.add('cell');
                 cell.addEventListener('click', () => move(i, j));
                 board.appendChild(cell);
