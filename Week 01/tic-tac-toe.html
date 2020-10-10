@@ -27,37 +27,98 @@
 </body>
 <script>
     let pattern = [
-        [1, 0, 0],
-        [0, 2, 0],
+        [0, 0, 0],
+        [0, 0, 0],
         [0, 0, 0]
     ];
 
     let userFlag = 1;
 
-    function show() {
+    /**
+     *  isPaint Boolean 控制是否绘制棋子
+    */
+    function show(isPaint) {
         let board = document.getElementById('board');
+        board.innerHTML = ''; // 先清空
+
         for (let i = 0; i < pattern.length; i++) {
             const arr = pattern[i];
             for (let j = 0; j < arr.length; j++) {
                 const el = arr[j];
                 let mark = el === 1 ? '⭕️' :
-                    el === 2 ? '❌' :
-                        '';
+                            el === 2 ? '❌' : '';
                 let cell = document.createElement('div');
-                cell.innerText = mark;
+                if (isPaint) cell.innerText = mark;
                 cell.classList.add('cell');
                 cell.addEventListener('click', () => move(i, j));
                 board.appendChild(cell);
             }
             board.appendChild(document.createElement('br'));
+        }        
+    }
+    show(true);
+
+    function move(i, j) {
+        if (pattern[i][j] === 0) {
+            pattern[i][j] = userFlag;
+            show(true);
+            if(check()) {
+                alert(`${userFlag === 1 ? '⭕️' : '❌'} 赢了`);
+                show(false);
+            }
+            userFlag = 3 - userFlag;
         }
     }
 
-    function move(i, j) {
-        console.log(i, j);
+    function check() {
+        // 行
+        for (let i = 0; i < 3; i++) {
+            let win = true;
+            for (let j = 0; j < 3; j++) {
+                if(pattern[i][j] !== userFlag) {
+                    win = false;
+                }
+            }
+            if (win) {
+                return true;
+            }
+        }
+        // 列
+        for (let i = 0; i < 3; i++) {
+            let win = true;
+            for (let j = 0; j < 3; j++) {
+                if (pattern[j][i] !== userFlag) {
+                    win = false;
+                }
+            }
+            if (win) {
+                return true;
+            }
+        }
+
+        // 斜-左上到右下（坐标相同）y = x
+        {
+            let win = true;
+            for (let i = 0; i < 3; i++) {
+                if(pattern[i][i] !== userFlag) {
+                    win = false;
+                }
+            }
+            if (win) return win;
+        }
+
+        // 斜-右上到左下（坐标相加等于2）y = 2 - x
+        {
+            let win = true;
+            for (let i = 0; i < 3; i++) {
+                if(pattern[i][2-i] !== userFlag) {
+                    win = false;
+                }
+            }
+            if (win) return win;
+        }
     }
 
-    show();
 </script>
 
 </html>
