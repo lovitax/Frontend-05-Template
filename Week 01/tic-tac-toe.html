@@ -38,7 +38,7 @@
      *  isPaint Boolean 控制是否绘制棋子
         本来想赢了之后清空棋盘，但是忘记了把数据清空，只是不画当前的棋子。。。所以有问题
     */
-    function show(isPaint) {
+    function show() {
         let board = document.getElementById('board');
         board.innerHTML = ''; // 先清空
 
@@ -49,7 +49,8 @@
                 let mark = el === 1 ? '⭕️' :
                     el === 2 ? '❌' : '';
                 let cell = document.createElement('div');
-                // if (isPaint) cell.innerText = mark;
+                // if (isPaint) 
+                cell.innerText = mark;
                 cell.classList.add('cell');
                 cell.addEventListener('click', () => move(i, j));
                 board.appendChild(cell);
@@ -57,18 +58,30 @@
             board.appendChild(document.createElement('br'));
         }
     }
-    show(true);
+    show();
 
     function move(i, j) {
         if (pattern[i][j] === 0) {
             pattern[i][j] = userFlag;
-            show(true);
+            show();
             if (check(pattern, userFlag)) {
                 alert(`${userFlag === 1 ? '⭕️' : '❌'} 赢了`);
-                show(false);
+                show();
             }
             userFlag = 3 - userFlag;
             willWin(pattern, userFlag);
+
+            computerMove();
+        }
+    }
+
+    function computerMove() {
+        let choice = bestChoice(pattern, userFlag);
+        if (choice.ponit) {
+            let point = choice.ponit;
+            pattern[point[0]][point[1]] = userFlag;
+            show();
+            userFlag = 3 - userFlag;
         }
     }
 
@@ -125,7 +138,7 @@
         return JSON.parse(JSON.stringify(pattern));
     }
 
-    function willWin() {
+    function willWin(pattern, userFlag) {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
                 if (pattern[i][j])
@@ -133,10 +146,61 @@
                 let temp = clone(pattern);
                 temp[i][j] = userFlag;
                 if (check(temp, userFlag)) {
-                    console.log(`${userFlag === 1 ? '⭕️' : '❌'} will win`);
+                    // console.log(`${userFlag === 1 ? '⭕️' : '❌'} will win`);
+                    return [i, j];
                 }
             }
         }
+        return null;
+    }
+
+    function bestChoice(pattern, userFlag) {
+        let p = null;
+        let result = -2;
+
+        // 下一步就赢了
+        if (p = willWin(pattern, userFlag)) {
+            return {
+                result: 1,
+                ponit: p
+            }
+        }
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (pattern[i][j])
+                    continue;
+                let temp = clone(pattern);
+                temp[i][j] = userFlag;
+
+                let otherResult = bestChoice(temp, 3 - userFlag);
+                // 对方下一步就赢了
+                // if (otherResult.result === 1) {
+                //     // console.log(i, j);
+                //     result = -1;
+                //     // p = [i, j];
+                // }
+                // if (otherResult.result === 0) {
+                //     result = 0;
+                //     p = [i, j];
+                // }
+
+                // if (otherResult.result === -1) {
+                //     // console.log(i, j);
+                //     result = 1;
+                //     p = [i, j];
+                // }
+
+                if (-otherResult.result > result) {
+                    p = [i, j];
+                    result = -otherResult.result;
+                }
+            }
+        }
+        return {
+            result: p ? result : 0,
+            ponit: p
+        };
     }
 
 </script>
