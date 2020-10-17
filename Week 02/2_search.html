@@ -58,7 +58,7 @@
             this.el = el;
             this.drawFlag = false;
             let data = JSON.parse(localStorage.getItem("data"));
-            this.data = data ? data : Array(width * height).fill(0);
+            this.data = data ? data : new Array(width * height);
             this.draw();
         }
 
@@ -73,8 +73,11 @@
                 let cell = document.createElement('div');
                 cell.classList.add('cell');
                 cell.addEventListener('mousemove', this.drawPath.bind(this, [x, y]));
-                if (this.getPoint([x, y])) {
+                if (this.getPoint([x, y]) === 1) {
                     cell.style.backgroundColor = 'black';
+                };
+                if (this.getPoint([x, y]) === 2) {
+                    cell.style.backgroundColor = 'green';
                 };
                 this.el.appendChild(cell);
             });
@@ -87,7 +90,7 @@
                     this.setPoint([x, y], 1);
                 };
             }
-            this.store();
+            // this.store();
         }
 
         traversal(callbackCell, callbackLine) {
@@ -104,6 +107,9 @@
         }
 
         setPoint([x, y], value) {
+            // if (value === 2) {
+            //     console.log(true);
+            // }
             this.data[this.convert([x, y])] = value;
         }
 
@@ -117,6 +123,47 @@
     }
 
     let map = new Map(document.getElementById('map'), { width: 50, height: 50 });
+
+    let mapData = map.data;
+
+    function sleep(timeout) {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, timeout);
+        });
+    }
+
+    async function path(mapData, start, end) { // 很慢？br的方式换了，边界条件改了
+        let queue = [start];
+
+        async function insert(x, y) {
+            if (x < 0 || x >= 50 || y < 0 || y >= 50) {
+                return;
+            }
+            if (mapData[y * 50 + x]) {
+                return;
+            }
+            // await sleep(30);
+
+            document.getElementById('map').children[y * 50 + x].style.backgroundColor = 'lightgreen';
+            mapData[y * 50 + x] = 2;
+            queue.push([x, y]);
+        }
+
+        while (queue.length) {
+            let [x, y] = queue.shift();
+            // console.log(x, y)
+            if (x === end[0] && y === end[1]) {
+                return true;
+            }
+            await insert(x - 1, y);
+            await insert(x, y - 1);
+            await insert(x + 1, y);
+            await insert(x, y + 1);
+        }
+        return false;
+    }
+
+// path(map, [0, 0], [5, 5])
 </script>
 
 </html>
