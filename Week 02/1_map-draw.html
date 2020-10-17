@@ -48,6 +48,7 @@
 
 <body>
     <div id="map"></div>
+    <button id="store">store</button>
 </body>
 
 <script>
@@ -87,7 +88,7 @@
                     this.setPoint([x, y], 1);
                 };
             }
-            this.store();
+            // this.store(); 改为手动的
         }
 
         traversal(callbackCell, callbackLine) {
@@ -112,11 +113,12 @@
         }
 
         store() {
-            localStorage.setItem("data", JSON.stringify(this.data));
+            this.data && localStorage.setItem("data", JSON.stringify(this.data));
         }
     }
 
     let map = new Map(document.getElementById('map'), { width: 50, height: 50 });
+    document.getElementById('store').addEventListener('click', map.store.bind(map));
 </script>
 
 </html>
