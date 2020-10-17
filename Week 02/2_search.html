@@ -48,6 +48,7 @@
 
 <body>
     <div id="map"></div>
+    <button id="store">store</button>
 </body>
 
 <script>
@@ -58,7 +59,7 @@
             this.el = el;
             this.drawFlag = false;
             let data = JSON.parse(localStorage.getItem("data"));
-            this.data = data ? data : new Array(width * height);
+            this.data = data ? data : Array(width * height).fill(0);
             this.draw();
         }
 
@@ -73,11 +74,8 @@
                 let cell = document.createElement('div');
                 cell.classList.add('cell');
                 cell.addEventListener('mousemove', this.drawPath.bind(this, [x, y]));
-                if (this.getPoint([x, y]) === 1) {
+                if (this.getPoint([x, y])) {
                     cell.style.backgroundColor = 'black';
-                };
-                if (this.getPoint([x, y]) === 2) {
-                    cell.style.backgroundColor = 'green';
                 };
                 this.el.appendChild(cell);
             });
@@ -90,7 +88,7 @@
                     this.setPoint([x, y], 1);
                 };
             }
-            // this.store();
+            // this.store(); 改为手动的
         }
 
         traversal(callbackCell, callbackLine) {
@@ -107,9 +105,6 @@
         }
 
         setPoint([x, y], value) {
-            // if (value === 2) {
-            //     console.log(true);
-            // }
             this.data[this.convert([x, y])] = value;
         }
 
@@ -118,21 +113,21 @@
         }
 
         store() {
-            localStorage.setItem("data", JSON.stringify(this.data));
+            this.data && localStorage.setItem("data", JSON.stringify(this.data));
         }
     }
 
     let map = new Map(document.getElementById('map'), { width: 50, height: 50 });
+    document.getElementById('store').addEventListener('click', map.store.bind(map));
 
     let mapData = map.data;
-
     function sleep(timeout) {
         return new Promise((resolve, reject) => {
             setTimeout(resolve, timeout);
         });
     }
 
-    async function path(mapData, start, end) { // 很慢？br的方式换了，边界条件改了
+    async function path(mapData, start, end) {
         let queue = [start];
 
         async function insert(x, y) {
@@ -142,7 +137,7 @@
             if (mapData[y * 50 + x]) {
                 return;
             }
-            // await sleep(30);
+            await sleep(30);
 
             document.getElementById('map').children[y * 50 + x].style.backgroundColor = 'lightgreen';
             mapData[y * 50 + x] = 2;
