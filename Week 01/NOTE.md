@@ -106,4 +106,6 @@ for (let i = 0; i < 3; i++) {
 
 其实我觉得generator和异步没啥必然关系，只是在没有async/await语法的时候，可以用他来模拟
 
+TODO： 扩展阅读，js高程第四版迭代器和生成器相关部分
+
 ### for await

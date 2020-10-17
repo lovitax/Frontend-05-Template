@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地图</title>
+    <style>
+        #map {
+            line-height: 0px;
+            -moz-user-select:none; /*火狐*/
+            -webkit-user-select:none; /*webkit浏览器*/
+            -ms-user-select:none; /*IE10*/
+            -khtml-user-select:none; /*早期浏览器*/
+            user-select:none;
+        }
+        .cell {
+            width: 10px;
+            height: 10px;
+            background-color: #a1a1a1;
+            display: inline-block;
+            border-right: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+            text-align: center;
+            line-height: 10px;
+            /* font-size: 50px; */
+            vertical-align: middle;
+
+            cursor: pointer;
+        }
+        br {
+            margin: 0;
+            padding: 0;
+            height: 0;
+            line-height: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+</body>
+
+<script>
+    class Map {
+        constructor(el, {width, height}) {
+            this.width = width;
+            this.height = height;
+            this.el = el;
+            this.drawFlag = false;
+            let data = JSON.parse(localStorage.getItem("data"));
+            this.data = data ? data : new Array(width * height);
+            this.draw();
+        }
+
+        draw() {
+            this.el.addEventListener('mousedown', e => {
+                this.drawFlag = true;
+            });
+            this.el.addEventListener('mouseup', e => {
+                this.drawFlag = false;
+            });
+            this.traversal((x, y) => {
+                let cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.addEventListener('mousemove', this.drawPath.bind(this, [x, y]));
+                    if (this.getPoint([x, y])) {
+                        cell.style.backgroundColor = 'black';
+                    };
+                    this.el.appendChild(cell);
+            }, (y) => {
+                this.el.appendChild(document.createElement('br'));
+            });
+        }
+
+        drawPath([x, y], e) {
+            if (this.drawFlag) {
+                if (!this.getPoint([x, y])) {
+                    e.target.style.backgroundColor = 'black';
+                    this.setPoint([x, y], 1);
+                };
+            }
+            this.store();
+        }
+
+        traversal(callbackCell, callbackLine) {
+            for (let i = 0; i < this.width; i++) {
+                for (let j = 0; j < this.height; j++) {
+                    callbackCell && callbackCell(j, i);
+                }
+                callbackLine && callbackLine(i);
+            }
+        }
+
+        getPoint([x, y]) {
+            return this.data[this.convert([x, y])];
+        }
+
+        setPoint([x, y], value) {
+            this.data[this.convert([x, y])] = value;
+        }
+
+        convert([x, y]) {
+            return y * this.height + x;
+        }
+
+        store() {
+            localStorage.setItem("data", JSON.stringify(this.data));
+        }
+    }
+
+    let map = new Map(document.getElementById('map'), {width: 50, height: 50});
+</script>
+</html>
