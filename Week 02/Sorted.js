@@ -24,7 +24,8 @@ class Sorted {
         this.data.pop();
         return min;
     }
-}
 
-let s = new Sorted([9, 8, 3, 5, 6, 3, 1, 2]);
-// s.take();
+    get length() {
+        return this.data.length;
+    }
+}
