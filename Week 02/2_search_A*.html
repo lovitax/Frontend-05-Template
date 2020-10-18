@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地图</title>
+    <style>
+        #map {
+            line-height: 0px;
+            -moz-user-select: none;
+            /*火狐*/
+            -webkit-user-select: none;
+            /*webkit浏览器*/
+            -ms-user-select: none;
+            /*IE10*/
+            -khtml-user-select: none;
+            /*早期浏览器*/
+            user-select: none;
+        }
+
+        .cell {
+            width: 4px;
+            height: 4px;
+            background-color: #a1a1a1;
+            display: inline-block;
+            border-right: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+            text-align: center;
+            /* line-height: 4px; */
+            /* font-size: 100px; */
+            vertical-align: middle;
+
+            cursor: pointer;
+        }
+
+        /* br {
+            margin: 0;
+            padding: 0;
+            height: 0;
+            line-height: 0px;
+        } */
+        #map {
+            width: 501px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <button id="store">store</button>
+</body>
+<script src="Sorted.js"></script>
+<script>
+    class Map {
+        constructor(el, { width, height }) {
+            this.width = width;
+            this.height = height;
+            this.el = el;
+            this.drawFlag = false;
+            let data = JSON.parse(localStorage.getItem("data"));
+            this.data = data ? data : Array(width * height).fill(0);
+            this.draw();
+        }
+
+        draw() {
+            this.el.addEventListener('mousedown', e => {
+                this.drawFlag = true;
+            });
+            this.el.addEventListener('mouseup', e => {
+                this.drawFlag = false;
+            });
+            this.traversal((x, y) => {
+                let cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.addEventListener('mousemove', this.drawPath.bind(this, [x, y]));
+                if (this.getPoint([x, y])) {
+                    cell.style.backgroundColor = 'black';
+                };
+                this.el.appendChild(cell);
+            });
+        }
+
+        drawPath([x, y], e) {
+            if (this.drawFlag) {
+                if (!this.getPoint([x, y])) {
+                    e.target.style.backgroundColor = 'black';
+                    this.setPoint([x, y], 1);
+                };
+            }
+            // this.store(); 改为手动的
+        }
+
+        traversal(callbackCell, callbackLine) {
+            for (let i = 0; i < this.width; i++) {
+                for (let j = 0; j < this.height; j++) {
+                    callbackCell && callbackCell(j, i);
+                }
+                callbackLine && callbackLine(i);
+            }
+        }
+
+        getPoint([x, y]) {
+            return this.data[this.convert([x, y])];
+        }
+
+        setPoint([x, y], value) {
+            this.data[this.convert([x, y])] = value;
+        }
+
+        convert([x, y]) {
+            return y * this.height + x;
+        }
+
+        store() {
+            this.data && localStorage.setItem("data", JSON.stringify(this.data));
+        }
+    }
+
+    let map = new Map(document.getElementById('map'), { width: 100, height: 100 });
+    document.getElementById('store').addEventListener('click', map.store.bind(map));
+
+    let mapData = map.data;
+    function sleep(timeout) {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, timeout);
+        });
+    }
+
+    async function findPath(mapData, start, end) {
+        let queue = [start];
+        let table = Object.create(mapData);
+
+        async function insert(x, y, pre) {
+            // debugger;
+            if (x < 0 || x >= 100 || y < 0 || y >= 100) {
+                return;
+            }
+            if (table[y * 100 + x]) {
+                return;
+            }
+            // await sleep(1);
+
+            // mapData[y * 100 + x] = 2;
+            table[y * 100 + x] = pre;
+            document.getElementById('map').children[y * 100 + x].style.backgroundColor = 'lightgreen';
+            queue.push([x, y]);
+        }
+
+        while (queue.length) {
+            let [x, y] = queue.shift();
+            if (x === end[0] && y === end[1]) {
+                let path = [];
+                console.log(path);
+                while (x !== start[0] || y !== start[1]) {
+                    // console.log(x, y);
+                    path.push([x, y]);
+                    [x, y] = table[y * 100 + x];
+                    await sleep(3);
+                    document.getElementById('map').children[y * 100 + x].style.backgroundColor = 'red';
+                }
+                return path;
+            }
+            await insert(x - 1, y, [x, y]);
+            await insert(x, y - 1, [x, y]);
+            await insert(x + 1, y, [x, y]);
+            await insert(x, y + 1, [x, y]);
+
+            // 加了斜方向的之后，会穿过去？确实会，后续优化 TODO:
+            // await insert(x - 1, y - 1, [x, y]);
+            // await insert(x + 1, y - 1, [x, y]);
+            // await insert(x - 1, y + 1, [x, y]);
+            // await insert(x + 1, y + 1, [x, y]);
+        }
+        return null;
+    }
+    // findPath(mapData, [0, 0], [5, 5])
+</script>
+
+<script src="Sorted.js"></script>
+
+</html>
