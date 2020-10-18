@@ -128,7 +128,8 @@
     }
 
     async function findPath(mapData, start, end) {
-        let queue = [start];
+        // let queue = [start];
+        let queue = new Sorted([start], (a, b) => distance(a) - distance(b));
         let table = Object.create(mapData);
 
         async function insert(x, y, pre) {
@@ -144,14 +145,18 @@
             // mapData[y * 100 + x] = 2;
             table[y * 100 + x] = pre;
             document.getElementById('map').children[y * 100 + x].style.backgroundColor = 'lightgreen';
-            queue.push([x, y]);
+            queue.give([x, y]);
+        }
+
+        function distance(ponit) {
+            return ((ponit[0] - end[0]) ** 2) + ((ponit[1] - end[1]) ** 2);
         }
 
         while (queue.length) {
-            let [x, y] = queue.shift();
+            let [x, y] = queue.take();
             if (x === end[0] && y === end[1]) {
                 let path = [];
-                console.log(path);
+                // console.log(path);
                 while (x !== start[0] || y !== start[1]) {
                     // console.log(x, y);
                     path.push([x, y]);
@@ -176,7 +181,5 @@
     }
     // findPath(mapData, [0, 0], [5, 5])
 </script>
-
-<script src="Sorted.js"></script>
 
 </html>
