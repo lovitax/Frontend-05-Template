@@ -129,7 +129,7 @@
 
     async function findPath(mapData, start, end) {
         // let queue = [start];
-        let queue = new Sorted([start], (a, b) => distance(a) - distance(b));
+        let queue = new Sorted([start], (a, b) => distance(a) - distance(b) > 0);
         let table = Object.create(mapData);
 
         async function insert(x, y, pre) {
@@ -166,10 +166,10 @@
                 }
                 return path;
             }
-            await insert(x - 1, y, [x, y]);
-            await insert(x, y - 1, [x, y]);
             await insert(x + 1, y, [x, y]);
             await insert(x, y + 1, [x, y]);
+            await insert(x - 1, y, [x, y]);
+            await insert(x, y - 1, [x, y]);
 
             // 加了斜方向的之后，会穿过去？确实会，后续优化 TODO:
             // await insert(x - 1, y - 1, [x, y]);
