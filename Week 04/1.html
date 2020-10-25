@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正则</title>
+</head>
+
+<body>
+    <script>
+        let reg = /([0-9\.]+)|([ \t]+)|([\n\N]+)|(\*)|(\/)|(\+)|(\-)/g; // 正则表达式，匹配数字空白和加减乘除符号
+        let dic = ['Number', 'WhiteSpace', 'LineTerminator', '*', '/', '+', '-'];
+
+        function tokenize(source) {
+            let result = null;
+            while (true) {
+                result = reg.exec(source);
+                if (!result) break;
+                for (var i = 1; i <= dic.length; i++) {
+                    if (result[i]) {
+                        console.log(dic[i - 1]);
+                    }
+                }
+            }
+        }
+
+        tokenize('2020 - 1024 * 1');
+    </script>
+</body>
+
+</html>
