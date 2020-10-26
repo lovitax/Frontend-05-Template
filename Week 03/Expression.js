@@ -2,7 +2,7 @@ function Expression(source) {
     if (source[0].type === 'AdditiveExpression' && source[1] && source[1].type === 'EOF') {
         let node = {
             type: 'Expression',
-            children: [source.shit(), source.shit()]
+            children: [source.shift(), source.shfit()]
         }
         source.unshift(node);
         return node;
