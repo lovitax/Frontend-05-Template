@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jsToken</title>
+</head>
+<body>
+<pre id="container"></pre>
+<style>
+    .keywords {
+        color: blue;
+    }
+    .punctutor {
+        color: blueviolet;
+    }
+    .identifier {
+        color: skyblue;
+    }
+</style>
+<script>
+let source = `
+    function sleep(t) {
+        return new Promise(function(resolve){
+            // var a = 1 + 1;
+            setTimeout(resolve, t);
+        });
+    }
+`;
+
+function sleep(t) {
+    return new Promise(function(resolve){
+        setTimeout(resolve, t);
+    });
+}
+
+let regexp = /(function|new|return)|([ \t\n\r]+)|([a-zA-Z][a-zA-Z0-9]*)|([\(\)\{\}\,\;])/g;
+let dictionary = ['keywords', 'whitespace', 'identifier', 'punctutor'];
+
+let token = null;
+let lastIndex = 0;
+let container = document.getElementById('container');
+(async function () {
+do {
+    lastIndex = regexp.lastIndex;
+    token = regexp.exec(source);
+    if (!token) break;
+    let text = document.createElement('span');
+    text.textContent = token[0];
+
+    for (let i= 1;i < 5;i++) {
+        if(token[i]){
+            text.classList.add(dictionary[i-1]);
+        }
+    }
+    // await sleep(300);
+    container.appendChild(text);
+} while (token);
+})();
+</script>
+</body>
+</html>
