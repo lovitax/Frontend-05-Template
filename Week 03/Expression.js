@@ -50,6 +50,7 @@ function AdditiveExpression(source) {
         return AdditiveExpression(source);
     }
     if (source[0].type === 'AdditiveExpression') {
+        debugger
         return source[0];
     }
     MultiplicativeExpression(source);
@@ -124,4 +125,4 @@ let source = [{
     type: 'EOF'
 }];
 
-console.log(AdditiveExpression(source));
+console.log(Expression(source));
